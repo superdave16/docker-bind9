@@ -1,0 +1,30 @@
+services:
+  bind9:
+    container_name: bind9
+    image: ubuntu/bind9
+    environment:
+     - TZ=Etc/UTC
+     - BIND9_USER=bind
+    ports:
+     - "53:53"
+    volumes:
+     - ./config/named.conf.local:/etc/bind/named.conf.local
+     - ./config/named.conf.options:/etc/bind/named.conf.options
+     - ./config/forward.domain.tld:/etc/bind/forward.domain.tld
+     - ./config/reverse.domain.tld:/etc/bind/reverse.domain.tld
+     - ./cache/:/var/cache/bind
+     - ./records/:/var/lib/bind
+    networks:
+      dns-network:
+        ipv4_address: 172.20.128.2
+
+
+networks:
+  dns-network:
+    name: dns-network
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          ip_range: 172.20.128.0/24
+          gateway: 172.20.126.254
